@@ -22,6 +22,8 @@ from werkzeug import secure_filename
 
 from PIL import Image
 
+import IPython
+
 
 
 app = Flask(__name__, static_folder='dist', static_url_path='')
@@ -45,33 +47,28 @@ def resize_image(path_orig, path_resized, sizes, keep_aspect_ratio=True, remove_
     """
     sleep(2)
     try:
+        # Open image
         img = Image.open(path_orig).convert('RGB')
+        # Apply ratio setting
         if keep_aspect_ratio:
             img.thumbnail(sizes, Image.ANTIALIAS)
         else:
             img = img.resize(sizes, Image.ANTIALIAS)
+        # Save formatted as JPEG
         img.save(path_resized, 'JPEG', optimize=True)  # WTF?! quality=80 makes it worse
-        if remove_orig:
-            os.remove(path_orig)
+        # Emit message of successfull upload
         socketio.emit('confirmation', {'connection_confirmation': 'life iz gud'}, namespace='/test')
+
     except Exception as e:
+        # Emit message of error
         print('===exception===')
         socketio.emit('confirmation', {'connection_confirmation': str(e)}, namespace='/test')
-    print('keke')
 
-
-# @celery.task(name='test_task')
-# def test_task():
-#     try:
-#         raise Exception
-#     except Exception as e:
-#         print('Exception handled')
-#     print('After try-catch')
-
-# @app.route('/gett')
-# def gett():
-#     test_task.delay()
-#     return ''
+    finally:
+        # Remove original file if appropriate flag is True
+        print('===remove section===')
+        if remove_orig:
+            os.remove(path_orig)
 
 
 @app.route('/')
@@ -88,10 +85,15 @@ def upload():
     """
     uploaded_files = flask.request.files.getlist('file[]')
     for file in uploaded_files:
-        filename = secure_filename(file.filename)
+        # Filename with chopped off extension
+        filename = os.path.splitext(secure_filename(file.filename))[0]
+        # Save stream as temporary file
         fd, path = tempfile.mkstemp()
-        Image.open(file.stream).save(path, 'JPEG', optimize=True)  # convert('RGB')
-        resize_image.delay(path, 'uploads/_' + filename, (300, 300), False)
+        with open(path, "wb") as out:
+                out.write(file.stream.read())
+        # Run task converting image
+        print(path, filename)
+        resize_image.delay(path, 'uploads/_' + filename + '.jpg', (300, 300), False)
     return ''
 
 
