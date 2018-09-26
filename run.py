@@ -33,7 +33,7 @@ celery = Celery('newscenter')
 celery.config_from_object(celeryconfig)
 
 
-@celery.task(name='resize_image')  # WTF?! lse name='proj.resize_image' works from ipython, but not from here
+@celery.task(name='resize_image')
 def resize_image(path_orig, path_resized, sizes, keep_aspect_ratio=True, remove_orig=False):
     """Optimize image size.
 
@@ -44,14 +44,18 @@ def resize_image(path_orig, path_resized, sizes, keep_aspect_ratio=True, remove_
         keep_aspect_ratio (bool): if set, fit image into `sizes`, but preserve it's aspect ratio
     """
     sleep(2)
-    img = Image.open(path_orig).convert('RGB')
-    if keep_aspect_ratio:
-        img.thumbnail(sizes, Image.ANTIALIAS)
-    else:
-        img = img.resize(sizes, Image.ANTIALIAS)
-    img.save(path_resized, 'JPEG', optimize=True)  # WTF?! quality=80 makes it worse
-    if remove_orig:
-        os.remove(path_orig)
+    try:
+        img = Image.open(path_orig).convert('RGB')
+        if keep_aspect_ratio:
+            img.thumbnail(sizes, Image.ANTIALIAS)
+        else:
+            img = img.resize(sizes, Image.ANTIALIAS)
+        img.save(path_resized, 'JPEG', optimize=True)  # WTF?! quality=80 makes it worse
+        if remove_orig:
+            os.remove(path_orig)
+        socketio.emit('confirmation', {'connection_confirmation': 'life iz gud'}, namespace='/test')
+    except Exception as e:
+        socketio.emit('confirmation', {'connection_confirmation': str(e)}, namespace='/test')
 
 
 @app.route('/')

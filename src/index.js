@@ -6,23 +6,26 @@ var app = new Vue({
     el: '#app',
     data: {
         message: 'Привет, Vue!',
-        files: new FormData(),
+        files: {
+            data: new FormData(),
+            total: 0,
+            celeryResult: [],
+        },
         socket: io.connect('http://localhost:9998/test'),
     },
     methods: {
         fileChange(fileList) {
             let file;
             for (file of fileList) {
-                // console.log(file);
-                this.files.append('file[]', file, file.name);
+                this.files.total++
+                this.files.data.append('file[]', file, file.name);
             }
-            console.log(JSON.stringify(this.files))
+            // console.log(JSON.stringify(this.files.data))
         },
         upload() {
-            console.log(JSON.stringify(this.files))
+            // console.log(JSON.stringify(this.files.data))
             document.getElementById('fileUploadForm').reset();
-            console.log(JSON.stringify(this.files))
-            axios({ method: 'POST', 'url': '/upload', 'data': this.files }).then(result => {
+            axios({ method: 'POST', 'url': '/upload', 'data': this.files.data }).then(result => {
                 // console.dir(result.data);
             }, error => {
                 console.error(error);
