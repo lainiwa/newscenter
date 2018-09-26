@@ -36,7 +36,7 @@ celery.config_from_object(celeryconfig)
 
 
 @celery.task(name='resize_image')
-def resize_image(path_orig, path_resized, sizes, keep_aspect_ratio=True, remove_orig=False):
+def resize_image(path_orig, path_resized, sizes, name, keep_aspect_ratio=True, remove_orig=False):
     """Optimize image size.
 
     Args:
@@ -57,12 +57,12 @@ def resize_image(path_orig, path_resized, sizes, keep_aspect_ratio=True, remove_
         # Save formatted as JPEG
         img.save(path_resized, 'JPEG', optimize=True)  # WTF?! quality=80 makes it worse
         # Emit message of successfull upload
-        socketio.emit('confirmation', {'connection_confirmation': 'life iz gud'}, namespace='/test')
+        socketio.emit('confirmation', {'image': name, 'success': True}, namespace='/test')
 
     except Exception as e:
         # Emit message of error
         print('===exception===')
-        socketio.emit('confirmation', {'connection_confirmation': str(e)}, namespace='/test')
+        socketio.emit('confirmation', {'image': name, 'success': False}, namespace='/test')
 
     finally:
         # Remove original file if appropriate flag is True
@@ -92,8 +92,11 @@ def upload():
         with open(path, "wb") as out:
                 out.write(file.stream.read())
         # Run task converting image
-        print(path, filename)
-        resize_image.delay(path, 'uploads/_' + filename + '.jpg', (300, 300), False)
+        resize_image.delay(
+            path_orig=path, path_resized=f'uploads/_{filename}.jpg',
+            sizes=(300, 300), name=file.filename,
+            keep_aspect_ratio=True, remove_orig=False
+        )
     return ''
 
 

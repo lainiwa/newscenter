@@ -31,15 +31,16 @@ var app = new Vue({
             // console.log(JSON.stringify(this.files.data))
         },
         upload() {
+            // Clear form
             document.getElementById('fileUploadForm').reset();
+            // Upload images to server
             axios({ method: 'POST', 'url': '/upload', 'data': this.files.data }).then(result => {
                 // console.dir(result.data);
             }, error => {
                 console.error(error);
             });
-            this.files = this.files.reset()
-            // this.files.total
-            // e.preventDefault();
+            // Clear form related data
+            this.files = this.files.reset();
         },
     },
 
@@ -54,7 +55,7 @@ var app = new Vue({
 
             // 'confirmation' event received by the client invokes the callback function which confirms the socket connection
             self.socket.on('confirmation', function(message) {
-                console.log(message.connection_confirmation)
+                console.log(message.image, message.success)
             });
         })
     }
