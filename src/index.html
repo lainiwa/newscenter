@@ -1,0 +1,35 @@
+<!--
+<form method="POST" enctype="multipart/form-data" action="/upload">
+    <input type="file" name="file[]" multiple="">
+    <input type="submit" value="add">
+</form>
+ -->
+<!DOCTYPE html>
+<html lang=en>
+
+<head>
+    <meta charset=utf-8>
+    <title>News Aggregation Center</title>
+</head>
+
+<body>
+    <div id="app">
+        <p>I'm the {{message}}</p>
+
+        <!-- <vue-dropzone id="drop1" :options="dropOptions"></vue-dropzone> -->
+
+        <!-- <form method="POST" enctype="multipart/form-data" action="/upload">
+            <input type="file" name="file[]" multiple="">
+            <input type="submit" value="add">
+        </form> -->
+
+        <form enctype="multipart/form-data" id="fileUploadForm">
+            <input type="file" name="file[]" v-on:change="fileChange($event.target.files)" multiple="">
+            <button type="button" v-on:click="upload()">Upload</button>
+        </form>
+
+    </div>
+    <script src="index.js"></script>
+</body>
+
+</html>
