@@ -55,7 +55,23 @@ def resize_image(path_orig, path_resized, sizes, keep_aspect_ratio=True, remove_
             os.remove(path_orig)
         socketio.emit('confirmation', {'connection_confirmation': 'life iz gud'}, namespace='/test')
     except Exception as e:
+        print('===exception===')
         socketio.emit('confirmation', {'connection_confirmation': str(e)}, namespace='/test')
+    print('keke')
+
+
+# @celery.task(name='test_task')
+# def test_task():
+#     try:
+#         raise Exception
+#     except Exception as e:
+#         print('Exception handled')
+#     print('After try-catch')
+
+# @app.route('/gett')
+# def gett():
+#     test_task.delay()
+#     return ''
 
 
 @app.route('/')
@@ -74,7 +90,7 @@ def upload():
     for file in uploaded_files:
         filename = secure_filename(file.filename)
         fd, path = tempfile.mkstemp()
-        Image.open(file.stream).save(path, 'JPEG', optimize=True)
+        Image.open(file.stream).save(path, 'JPEG', optimize=True)  # convert('RGB')
         resize_image.delay(path, 'uploads/_' + filename, (300, 300), False)
     return ''
 
