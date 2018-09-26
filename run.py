@@ -1,22 +1,31 @@
+"""The only sript yet.
+
+It would be devided in the future.
+
+Useful commands:
+    celery -A run:celery worker -Q hipri --loglevel=info
+    docker run -d --hostname my-rabbit --name some-rabbit -p 5672:5672 -e RABBITMQ_DEFAULT_USER=user -e RABBITMQ_DEFAULT_PASS=password rabbitmq:3
+"""
+
 import os
 import tempfile
 from time import sleep
+
 from celery import Celery
-from PIL import Image
+import celeryconfig
 
 import flask
 from flask import Flask, request, abort, redirect, url_for, send_file
 from flask_restful import Api, Resource, reqparse
-from werkzeug import secure_filename
 from flask_socketio import SocketIO, emit, join_room, rooms
+from werkzeug import secure_filename
 
-import celeryconfig
+from PIL import Image
+
 
 
 app = Flask(__name__, static_folder='dist', static_url_path='')
 app.config['SECRET_KEY'] = 'there is no secret'
-# app.config.from_pyfile('configs/flask.py')
-# app.config.from_pyfile('config_file.cfg')
 
 socketio = SocketIO(app, message_queue='amqp://user:password@localhost//')
 
@@ -52,19 +61,17 @@ def index():
 
 @app.route('/upload', methods=['POST'])
 def upload():
-    # print(flask.request.files)
-    # print(flask.request.files.getlist('file[]'))
+    """Resize image and copy to `uploads` folder.
+
+    Each file is saved as temporary file, and then a celery task is called on it.
+    This task resizes the temporary file and places it into `uploads` folder.
+    """
     uploaded_files = flask.request.files.getlist('file[]')
     for file in uploaded_files:
         filename = secure_filename(file.filename)
-        # file.save(os.path.join('uploads', filename))
-        # Image.open(file.stream).save('uploads/_' + filename, 'JPEG', optimize=True)
         fd, path = tempfile.mkstemp()
-        # print(path)
         Image.open(file.stream).save(path, 'JPEG', optimize=True)
         resize_image.delay(path, 'uploads/_' + filename, (300, 300), False)
-        # resize_image.delay(file.stream, 'uploads/_' + filename, (150, 150), False)
-    # print(uploaded_files)
     return ''
 
 
@@ -76,22 +83,3 @@ def confirmation_message(message):
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=9998)
-
-
-# from funcy import walk_values, iffy, caller, omit
-# from sqlalchemy import create_engine, Column, String, ForeignKey, DateTime, Integer, FetchedValue, text
-# from sqlalchemy.ext.declarative import declarative_base
-# from sqlalchemy.orm import sessionmaker, scoped_session
-# from sqlalchemy.sql import func
-# from sqlalchemy.dialects.postgresql import JSON
-# from sqlalchemy.ext.declarative import declared_attr
-# from sqlalchemy_repr import RepresentableBase
-# from sqlalchemy_utils import database_exists, create_database, drop_database
-# from marshmallow_sqlalchemy import ModelSchema
-# # docker run --name cel-postgres -p 5432:5432 -e POSTGRES_USER=news -e POSTGRES_PASSWORD=pass -d postgres
-
-# Base = declarative_base(cls=RepresentableBase)
-# url = 'postgresql+psycopg2://news:pass@localhost/news'
-# engine = create_engine(url, echo=True, pool_size=10, max_overflow=20)
-# Base.metadata.create_all(engine)
-# Session = sessionmaker(bind=engine)
