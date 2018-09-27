@@ -1,0 +1,30 @@
+* {
+    padding: 0px;
+    margin: 0px;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+
+/* Видимые div'ы для отладки. */
+
+div {
+    border: 5px solid black;
+    padding: 0px;
+    margin: 0px;
+}
+
+
+body {
+    background-color: #CCC;
+}
+
+.wrapper {
+    display: grid;
+    width: 50%;
+    grid-template-columns: 45% 45% 10%;
+    /*grid-template-rows: 50px 50px;*/
+}

@@ -10,24 +10,39 @@
 <head>
     <meta charset=utf-8>
     <title>News Aggregation Center</title>
+    <link rel="stylesheet" type="text/css" href="index.css">
 </head>
 
 <body>
     <div id="app">
         <p>I'm the {{message}}</p>
-
         <!-- <vue-dropzone id="drop1" :options="dropOptions"></vue-dropzone> -->
-
         <!-- <form method="POST" enctype="multipart/form-data" action="/upload">
             <input type="file" name="file[]" multiple="">
             <input type="submit" value="add">
         </form> -->
+        <!-- <div class="wrapper">
+            </todo-item>
+            <div>1</div>
+            <div>2</div>
+            <div>3</div>
+            <div>4</div>
+            <div>5</div>
+            <div>6</div>
+        </div> -->
+
+        <div class="wrapper">
+            <template v-for="rez in files.celeryResult">
+                <div>{{ rez.image }}</div>
+                <div>{{ rez.success }}</div>
+                <div>X</div>
+            </template>
+        </div>
 
         <form enctype="multipart/form-data" id="fileUploadForm">
             <input type="file" name="file[]" v-on:change="fileChange($event.target.files)" multiple="">
             <button type="button" v-on:click="upload()">Upload</button>
         </form>
-
     </div>
     <script src="index.js"></script>
 </body>

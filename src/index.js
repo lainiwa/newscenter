@@ -56,6 +56,7 @@ var app = new Vue({
             // 'confirmation' event received by the client invokes the callback function which confirms the socket connection
             self.socket.on('confirmation', function(message) {
                 console.log(message.image, message.success)
+                self.files.celeryResult.push(message);
             });
         })
     }

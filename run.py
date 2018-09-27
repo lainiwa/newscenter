@@ -103,7 +103,7 @@ def upload():
 @socketio.on('connection', namespace='/test')
 def confirmation_message(message):
     print(message)
-    emit('confirmation', {'connection_confirmation': message['connection_confirmation']})
+    # emit('confirmation', {'connection_confirmation': message['connection_confirmation']})
 
 
 if __name__ == '__main__':
