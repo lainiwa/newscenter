@@ -100,6 +100,21 @@ def upload():
     return ''
 
 
+@app.route('/delete_image', methods=['POST'])
+def delete_image():
+    # insecure_filename = request.form['filename']
+    insecure_filename = request.json.get('filename', '')
+    filename = os.path.splitext(secure_filename(insecure_filename))[0]
+    path = f'uploads/_{filename}.jpg'
+    print(insecure_filename)
+    print(path)
+    if os.path.isfile(path):
+        os.remove(path)
+    else:
+        return '', 404
+    return ''
+
+
 @socketio.on('connection', namespace='/test')
 def confirmation_message(message):
     print(message)

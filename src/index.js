@@ -42,6 +42,21 @@ var app = new Vue({
             // Clear form related data
             this.files = this.files.reset();
         },
+        deleteFile(filename) {
+            let message = this.files.celeryResult.filter(x => x['image'] == filename)[0]
+            // console.log(message)
+            if (message.success) {
+                // Delete image from server
+                axios({ method: 'POST', 'url': '/delete_image', 'data': { filename: filename } }).then(result => {
+                    // console.dir(result.data);
+                }, error => {
+                    console.error(error);
+                });
+            }
+            this.files.total--;
+            // console.log(this.files.celeryResult);
+            this.files.celeryResult = this.files.celeryResult.filter(x => x['image'] != filename);
+        },
     },
 
     mounted: function() {
