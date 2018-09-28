@@ -43,8 +43,9 @@ var app = new Vue({
             this.files = this.files.reset();
         },
         deleteFile(filename) {
+            // Message for this particular file
             let message = this.files.celeryResult.filter(x => x['image'] == filename)[0]
-            // console.log(message)
+            // If file conversion was successfull (i.e. file exists on server)
             if (message.success) {
                 // Delete image from server
                 axios({ method: 'POST', 'url': '/delete_image', 'data': { filename: filename } }).then(result => {
@@ -53,8 +54,8 @@ var app = new Vue({
                     console.error(error);
                 });
             }
+            // Remove file from `this.files`
             this.files.total--;
-            // console.log(this.files.celeryResult);
             this.files.celeryResult = this.files.celeryResult.filter(x => x['image'] != filename);
         },
     },

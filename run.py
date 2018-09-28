@@ -35,6 +35,16 @@ celery = Celery('newscenter')
 celery.config_from_object(celeryconfig)
 
 
+def fileToPath(insecure_filename):
+    """Get upload path for filename.
+
+    Args:
+       insecure_filename (str): original non-escaped filename
+    """
+    filename = os.path.splitext(secure_filename(insecure_filename))[0]
+    return f'uploads/_{filename}.jpg'
+
+
 @celery.task(name='resize_image')
 def resize_image(path_orig, path_resized, sizes, name, keep_aspect_ratio=True, remove_orig=False):
     """Optimize image size.
@@ -85,15 +95,13 @@ def upload():
     """
     uploaded_files = flask.request.files.getlist('file[]')
     for file in uploaded_files:
-        # Filename with chopped off extension
-        filename = os.path.splitext(secure_filename(file.filename))[0]
         # Save stream as temporary file
         fd, path = tempfile.mkstemp()
         with open(path, "wb") as out:
                 out.write(file.stream.read())
         # Run task converting image
         resize_image.delay(
-            path_orig=path, path_resized=f'uploads/_{filename}.jpg',
+            path_orig=path, path_resized=fileToPath(file.filename),
             sizes=(300, 300), name=file.filename,
             keep_aspect_ratio=True, remove_orig=False
         )
@@ -102,16 +110,15 @@ def upload():
 
 @app.route('/delete_image', methods=['POST'])
 def delete_image():
-    # insecure_filename = request.form['filename']
-    insecure_filename = request.json.get('filename', '')
-    filename = os.path.splitext(secure_filename(insecure_filename))[0]
-    path = f'uploads/_{filename}.jpg'
-    print(insecure_filename)
-    print(path)
+    """Delete uploaded image from uploads folder by name."""
+    path = fileToPath(request.json.get('filename', ''))
+    # If path doesn't exist, return 404 error;
+    # else remove the file
     if os.path.isfile(path):
         os.remove(path)
     else:
         return '', 404
+
     return ''
 
 
