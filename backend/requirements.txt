@@ -15,5 +15,7 @@ celery
 flower
 pillow
 flask_socketio
+gevent
+gevent-websocket
 ipython
 flask_jwt_extended
