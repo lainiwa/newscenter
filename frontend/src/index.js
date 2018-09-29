@@ -65,9 +65,9 @@ var app = new Vue({
         this.$nextTick(function() {
             // Код, который будет запущен только после
             // отображения всех представлений
-            self.socket.on('connect', function() {
-                self.socket.emit('connection', { connection_confirmation: 'you are connected to the socket!' });
-            });
+            // self.socket.on('connect', function() {
+            //     self.socket.emit('connection', { connection_confirmation: 'you are connected to the socket!' });
+            // });
 
             // 'confirmation' event received by the client invokes the callback function which confirms the socket connection
             self.socket.on('confirmation', function(message) {

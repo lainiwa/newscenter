@@ -1,5 +1,5 @@
-**/__pycache__/
-**/.cache/
-node_modules/
-dist/
-uploads/*
+backend/**/__pycache__/
+backend/**/.cache/
+backend/uploads/*
+frontend/node_modules/
+frontend/dist/

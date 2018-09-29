@@ -16,3 +16,4 @@ flower
 pillow
 flask_socketio
 ipython
+flask_jwt_extended
