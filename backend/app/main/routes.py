@@ -19,8 +19,6 @@ def fileToPath(insecure_filename):
 
 @main.route('/')
 def index():
-    # return 'kek'
-    # return main.send_static_file('__init__.py')
     return main.send_static_file('index.html')
 
 

@@ -11,7 +11,7 @@ var app = new Vue({
             reset: filesInitVal,
             data: new FormData(),
             total: 0,
-            celeryResult: []
+            celeryResult: [],
         });
         // Data
         return {
@@ -34,7 +34,7 @@ var app = new Vue({
             // Clear form
             document.getElementById('fileUploadForm').reset();
             // Upload images to server
-            axios({ method: 'POST', 'url': '/upload', 'data': this.files.data }).then(result => {
+            axios({ method: 'POST', url: '/upload', data: this.files.data }).then(result => {
                 // console.dir(result.data);
             }, error => {
                 console.error(error);
@@ -48,7 +48,7 @@ var app = new Vue({
             // If file conversion was successfull (i.e. file exists on server)
             if (message.success) {
                 // Delete image from server
-                axios({ method: 'POST', 'url': '/delete_image', 'data': { filename: filename } }).then(result => {
+                axios({ method: 'POST', url: '/delete_image', data: { filename: filename } }).then(result => {
                     // console.dir(result.data);
                 }, error => {
                     console.error(error);
@@ -65,9 +65,9 @@ var app = new Vue({
         this.$nextTick(function() {
             // Код, который будет запущен только после
             // отображения всех представлений
-            // self.socket.on('connect', function() {
-            //     self.socket.emit('connection', { connection_confirmation: 'you are connected to the socket!' });
-            // });
+            self.socket.on('connect', function() {
+                self.socket.emit('connection', { connection_confirmation: 'you are connected to the socket!' });
+            });
 
             // 'confirmation' event received by the client invokes the callback function which confirms the socket connection
             self.socket.on('confirmation', function(message) {
@@ -75,6 +75,6 @@ var app = new Vue({
                 self.files.celeryResult.push(message);
             });
         })
-    }
+    },
 
 })

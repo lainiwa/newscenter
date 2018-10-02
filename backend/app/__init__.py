@@ -7,7 +7,7 @@ from celery import Celery
 import app.celeryconfig
 
 
-socketio = SocketIO(message_queue='amqp://user:password@localhost//')
+socketio = SocketIO(message_queue='amqp://user:password@localhost//', managed_session=False)
 jwt = JWTManager()
 
 celery = Celery('newscenter', include=['app.tasks'])
