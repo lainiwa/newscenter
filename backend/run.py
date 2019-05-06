@@ -3,7 +3,7 @@
 It would be devided in the future.
 
 Useful commands:
-    celery -A run:celery worker -Q hipri --loglevel=info
+    celery -A app:celery worker -Q hipri --loglevel=info
     docker run -d --hostname my-rabbit --name some-rabbit -p 5672:5672 -e RABBITMQ_DEFAULT_USER=user -e RABBITMQ_DEFAULT_PASS=password rabbitmq:3
 """
 

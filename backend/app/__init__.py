@@ -1,3 +1,6 @@
+import gevent.monkey
+gevent.monkey.patch_all()
+
 from flask import Flask, Blueprint
 
 from flask_socketio import SocketIO
